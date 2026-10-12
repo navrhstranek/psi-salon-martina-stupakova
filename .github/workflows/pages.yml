@@ -1,0 +1,33 @@
+# Publikuje obsah slozky public/ na GitHub Pages.
+# Pozor: Pages umi jen staticke soubory, takze sprava cen na /admin
+# a funkce ve slozce functions/ tu fungovat nebudou. Ty bezi na Cloudflare.
+name: Nasadit na GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  nasadit:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.nasazeni.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - id: nasazeni
+        uses: actions/deploy-pages@v4
